@@ -4,7 +4,7 @@
 
 Extends official Jenkins image with Docker to be able run jobs inside containers.
 
-* Based on: Official `Jenkins 2.176.1` and `Alpine 3.9`
+* Based on: Official `Jenkins 2.176.1`, `Jenkins 2.305`, `Jenkins 2.324` and `Alpine 3.9`
 * Included:
     - Docker
 
@@ -16,6 +16,8 @@ Extends official Jenkins image with Docker to be able run jobs inside containers
 | :------------- | :------------- | :------------- | :------------- |
 | [spryker/jenkins:latest](https://hub.docker.com/r/spryker/jenkins/tags) | 2.176.1 | [![](https://images.microbadger.com/badges/image/spryker/jenkins:latest.svg)](https://microbadger.com/images/spryker/jenkins:latest "Get your own image badge on microbadger.com") | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.176/Dockerfile) |
 | [spryker/jenkins:2.176](https://hub.docker.com/r/spryker/jenkins/tags)  | 2.176.1 | [![](https://images.microbadger.com/badges/image/spryker/jenkins:2.176.svg)](https://microbadger.com/images/spryker/jenkins:2.176 "Get your own image badge on microbadger.com") | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.176/Dockerfile) |
+| [spryker/jenkins:2.305](https://hub.docker.com/r/spryker/jenkins/tags)  | 2.305 | [![](https://images.microbadger.com/badges/image/spryker/jenkins:2.304.svg)](https://microbadger.com/images/spryker/jenkins:2.305 "Get your own image badge on microbadger.com") | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.305/Dockerfile) |
+| [spryker/jenkins:2.324](https://hub.docker.com/r/spryker/jenkins/tags)  | 2.324 | [![](https://images.microbadger.com/badges/image/spryker/jenkins:2.324.svg)](https://microbadger.com/images/spryker/jenkins:2.324 "Get your own image badge on microbadger.com") | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.324/Dockerfile) |
 
 ## How to use
 
