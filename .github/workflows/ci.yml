@@ -1,9 +1,6 @@
-name: Docker Image Build Check
+name: CI
 
-on:
-  push:
-    branches-ignore:
-      - master
+on: push
 
 jobs:
   build:
@@ -13,7 +10,7 @@ jobs:
       matrix:
         include:
           - image: '2.176/Dockerfile'
-            tags: [ "spryker/jenkins:2.176" ]
+            tags: [ "spryker/jenkins:2.176", "spryker/jenkins:latest" ]
             platforms: [ 'linux/amd64', 'linux/arm64' ]
 
           - image: '2.305/Dockerfile'
@@ -23,7 +20,6 @@ jobs:
           - image: '2.324/Dockerfile'
             tags: [ "spryker/jenkins:latest", "spryker/jenkins:2.324" ]
             platforms: [ 'linux/amd64', 'linux/arm64' ]
-
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -31,11 +27,17 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          push: false
+          push: ${{ github.ref == 'refs/heads/master' }}
           file: ${{ matrix.image }}
           tags: ${{ join(matrix.tags) }}
-          platforms: ${{ join(matrix.platform) }}
+          platforms: ${{ join(matrix.platforms) }}
