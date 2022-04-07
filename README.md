@@ -4,7 +4,7 @@
 
 Extends official Jenkins image with Docker to be able run jobs inside containers.
 
-* Based on: Official `Jenkins 2.176.1`, `Jenkins 2.305`, `Jenkins 2.324` and `Alpine 3.9`
+* Based on: Official `Jenkins 2.176.1`, `Jenkins 2.305` and `Jenkins 2.324`
 * Included:
     - Docker
 
