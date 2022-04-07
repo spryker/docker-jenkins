@@ -23,10 +23,6 @@ jobs:
             tags: [ "spryker/jenkins:latest", "spryker/jenkins:2.324" ]
             platforms: [ 'linux/amd64', 'linux/arm64' ]
     steps:
-      - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.GIT_AUTH_TOKEN }}
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
@@ -47,5 +43,3 @@ jobs:
           file: ${{ matrix.image }}
           tags: ${{ join(matrix.tags) }}
           platforms: ${{ join(matrix.platform) }}
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.GIT_AUTH_TOKEN }}
