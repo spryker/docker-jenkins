@@ -8,7 +8,22 @@ Extends official Jenkins image with Docker to be able run jobs inside containers
 * Included:
     - Docker
 
-> Note: Provided images require additional configuration for development, staging and production use.
+> Note: Provided images require additional configuration for development, staging and production use.  
+
+## Reverse Proxy
+The provided nginx image is used as reverse proxy to block the access to these sensitive urls : 
+- asynchPeople
+- cli
+- credential-store
+- injectedEnvVars
+- jnlpJars
+- quietDown
+- restart
+- script
+- systemInfo
+- user/jenkins
+
+It should be called in the same docker-compose as Jenkins. Jenkins' container must be named : ```jenkins_scheduler```
 
 ## Tags
 
