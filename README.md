@@ -19,7 +19,6 @@ The provided nginx image is used as reverse proxy to block the access to these s
 - jnlpJars
 - quietDown
 - restart
-- script
 - systemInfo
 - user/jenkins
 
