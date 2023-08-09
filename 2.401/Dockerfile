@@ -1,4 +1,4 @@
-ARG JENKINS_VERSION=2.401.2
+ARG JENKINS_VERSION=2.401.3
 
 FROM spryker/jenkins-boilerplate:${JENKINS_VERSION} as jenkins_boilerplate
 
