@@ -20,6 +20,10 @@ jobs:
           - image: '2.324/Dockerfile'
             tags: [ "spryker/jenkins:latest", "spryker/jenkins:2.324" ]
             platforms: [ 'linux/amd64', 'linux/arm64' ]
+
+          - image: 'nginx/Dockerfile'
+            tags: [ "spryker/jenkins:nginx-latest" ]
+            platforms: [ 'linux/amd64', 'linux/arm64' ]
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
