@@ -22,7 +22,11 @@ jobs:
             platforms: [ 'linux/amd64', 'linux/arm64' ]
           
           - image: '2.401/Dockerfile'
-            tags: [ "spryker/jenkins:latest", "spryker/jenkins:2.401" ]
+            tags: [ "spryker/jenkins:2.401" ]
+            platforms: [ 'linux/amd64', 'linux/arm64' ]
+
+          - image: '2.442/Dockerfile'
+            tags: [ "spryker/jenkins:latest", "spryker/jenkins:2.442" ]
             platforms: [ 'linux/amd64', 'linux/arm64' ]
     steps:
       - name: Set up QEMU
