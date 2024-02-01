@@ -15,6 +15,6 @@ ENV JAVA_OPTS='-Djenkins.install.runSetupWizard=false -Xms128m -Xmx128m'
 RUN apt update && \
     apt install -y \
     docker \
-    netcat
+    netcat-openbsd
 
 USER jenkins
