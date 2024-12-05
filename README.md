@@ -58,7 +58,7 @@ jenkins:
 
 ```yaml
 jenkins:
-    image: spryker/jenkins:2.401
+    image: spryker/jenkins:2.488
     user: "1000:${DOCKER_GID}"
     volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
