@@ -18,29 +18,29 @@ jobs:
           ### Jenkins 2.1
           - context: "2.176"
             dockerfile: "Dockerfile"
-            tag: [ "spryker/jenkins:2.176" ]
+            tag: "spryker/jenkins:2.176"
             platforms: [ 'linux/amd64', 'linux/arm64' ]
           ### Jenkins 2.3
           - context: "2.305"
             dockerfile: "Dockerfile"
-            tag: [ "spryker/jenkins:2.305" ]
+            tag: "spryker/jenkins:2.305"
             platforms: [ 'linux/amd64', 'linux/arm64' ]
           - context: "2.324"
             dockerfile: "Dockerfile"
-            tag: [ "spryker/jenkins:2.324" ]
+            tag: "spryker/jenkins:2.324"
             platforms: [ 'linux/amd64', 'linux/arm64' ]
           ### Jenkins 2.4
           - context: "2.401"
             dockerfile: "Dockerfile"
-            tag: [ "spryker/jenkins:2.401" ]
+            tag: "spryker/jenkins:2.401"
             platforms: [ 'linux/amd64', 'linux/arm64' ]
           - context: "2.442"
             dockerfile: "Dockerfile"
-            tag: [ "spryker/jenkins:2.442" ]
+            tag: "spryker/jenkins:2.442"
             platforms: [ 'linux/amd64', 'linux/arm64' ]
           - context: "2.488"
             dockerfile: "Dockerfile"
-            tag: [ "spryker/jenkins:2.488" ]
+            tag: "spryker/jenkins:2.488"
             platforms: [ 'linux/amd64', 'linux/arm64' ]
 
     name: Build and Scan - ${{ matrix.tag }}
