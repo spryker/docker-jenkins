@@ -19,29 +19,29 @@ jobs:
           - context: "2.176"
             dockerfile: "Dockerfile"
             tag: "spryker/jenkins:2.176"
-            platforms: [ 'linux/amd64', 'linux/arm64' ]
+            platforms: "linux/amd64,linux/arm64"
           ### Jenkins 2.3
           - context: "2.305"
             dockerfile: "Dockerfile"
             tag: "spryker/jenkins:2.305"
-            platforms: [ 'linux/amd64', 'linux/arm64' ]
+            platforms: "linux/amd64,linux/arm64"
           - context: "2.324"
             dockerfile: "Dockerfile"
             tag: "spryker/jenkins:2.324"
-            platforms: [ 'linux/amd64', 'linux/arm64' ]
+            platforms: "linux/amd64,linux/arm64"
           ### Jenkins 2.4
           - context: "2.401"
             dockerfile: "Dockerfile"
             tag: "spryker/jenkins:2.401"
-            platforms: [ 'linux/amd64', 'linux/arm64' ]
+            platforms: "linux/amd64,linux/arm64"
           - context: "2.442"
             dockerfile: "Dockerfile"
             tag: "spryker/jenkins:2.442"
-            platforms: [ 'linux/amd64', 'linux/arm64' ]
+            platforms: "linux/amd64,linux/arm64"
           - context: "2.488"
             dockerfile: "Dockerfile"
             tag: "spryker/jenkins:2.488"
-            platforms: [ 'linux/amd64', 'linux/arm64' ]
+            platforms: "linux/amd64,linux/arm64"
 
     name: Build and Scan - ${{ matrix.tag }}
     uses: DenysSirchenko/gha_workflows/.github/workflows/ecr-scheduled-security-scan.yml@main
