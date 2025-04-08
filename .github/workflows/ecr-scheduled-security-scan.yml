@@ -16,24 +16,24 @@ jobs:
       matrix:
         include:
         #   ### Jenkins 2.1
-        #   - context: "2.176/Dockerfile"
+        #   - image: "2.176/Dockerfile"
         #     tag: "2.176"
         #     platforms: "linux/amd64"
         #   ### Jenkins 2.3
-        #   - context: "2.305/Dockerfile"
+        #   - image: "2.305/Dockerfile"
         #     tag: "2.305"
         #     platforms: "linux/amd64"
-        #   - context: "2.324/Dockerfile"
+        #   - image: "2.324/Dockerfile"
         #     tag: "2.324"
         #     platforms: "linux/amd64"
         #   ### Jenkins 2.4
-        #   - context: "2.401/Dockerfile"
+        #   - image: "2.401/Dockerfile"
         #     tag: "2.401"
         #     platforms: "linux/amd64"
-        #   - context: "2.442/Dockerfile"
+        #   - image: "2.442/Dockerfile"
         #     tag: "2.442"
         #     platforms: "linux/amd64"
-          - context: "2.488/Dockerfile"
+          - image: "2.488/Dockerfile"
             tag: "2.488"
             platforms: "linux/amd64"
 
@@ -54,7 +54,7 @@ jobs:
         with:
           push: true
           file: ${{ matrix.image }}
-          tags: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_ECR_REPO }}:${{ matrix.tags }}-${{ github.sha }}
+          tags: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_ECR_REPO }}:${{ matrix.tag }}-${{ github.sha }}
           platforms: ${{ matrix.platforms }}
 
       - name: Scan Docker image
@@ -62,11 +62,11 @@ jobs:
         uses: alexjurkiewicz/ecr-scan-image@v3.0.0
         with:
           repository: ${{ secrets.AWS_ECR_REPO }}
-          tag: ${{ join(matrix.tags) }}-${{ github.sha }}
+          tag: ${{ join(matrix.tag) }}-${{ github.sha }}
 
       - name: Delete images after scan images
         run: |
-          aws ecr batch-delete-image --repository-name ${{ secrets.AWS_ECR_REPO }} --image-id imageTag="${{ join(matrix.tags) }}-${{ github.sha }}"
+          aws ecr batch-delete-image --repository-name ${{ secrets.AWS_ECR_REPO }} --image-id imageTag="${{ join(matrix.tag) }}-${{ github.sha }}"
 
       - run: |
           echo "${{ steps.docker-scan.outputs.total }} total vulnerabilities."
