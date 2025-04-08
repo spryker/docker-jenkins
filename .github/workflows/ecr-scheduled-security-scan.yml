@@ -57,12 +57,9 @@ jobs:
           tags: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.AWS_ECR_REPO }}:${{ matrix.tag }}-${{ github.sha }}
           platforms: ${{ matrix.platforms }}
 
-      - name: Wait for image to be available
-        run: sleep 30
-
       - name: Scan Docker image
         id: docker-scan
-        uses: alexjurkiewicz/ecr-scan-image@v3.0.0
+        uses: alexjurkiewicz/ecr-scan-image@v2.0.0
         with:
           repository: ${{ secrets.AWS_ECR_REPO }}
           tag: ${{ join(matrix.tag) }}-${{ github.sha }}
