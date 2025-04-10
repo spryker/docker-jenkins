@@ -9,7 +9,7 @@ echo ""
 echo "📄 === Current Image Report ==="
 cat current-image-report.txt
 
-# Run diff and remove metadata lines (---, +++, @@) for cleaner output
+# Run diff and remove metadata lines
 echo ""
 echo "🔍 Running diff..."
 {
@@ -17,9 +17,8 @@ echo "🔍 Running diff..."
   diff -u previous-image-report.txt current-image-report.txt | grep -vE '^(---|\+\+\+|@@)'
 } > diff-output.txt
 
-# Output the final diff
 cat diff-output.txt
 
-# Export diff output for later steps (like Slack notification)
-DIFF_OUTPUT=$(cat diff-output.txt | base64)
-echo "DIFF_OUTPUT=$DIFF_OUTPUT" >> $GITHUB_ENV
+# Export base64-encoded diff output (one line, no line breaks)
+DIFF_OUTPUT=$(base64 -w 0 diff-output.txt)
+echo "DIFF_OUTPUT=$DIFF_OUTPUT" >> "$GITHUB_ENV"
