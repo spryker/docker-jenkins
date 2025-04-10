@@ -1,19 +1,25 @@
 #!/bin/bash
 
-set -e
+# Display previous image report
+echo "📄 === Previous Image Report ==="
+cat previous-image-report.txt
 
-CURRENT_REPORT="current-image-report.txt"
-PREVIOUS_REPORT="previous-image-report.txt"
-DIFF_OUTPUT="diff-output.txt"
+# Display current image report
+echo ""
+echo "📄 === Current Image Report ==="
+cat current-image-report.txt
 
-echo "=== Diff Between Jenkins Images ===" > "$DIFF_OUTPUT"
-echo "" >> "$DIFF_OUTPUT"
+# Run diff and remove metadata lines (---, +++, @@) for cleaner output
+echo ""
+echo "🔍 Running diff..."
+{
+  echo "📋 === Diff Output ==="
+  diff -u previous-image-report.txt current-image-report.txt | grep -vE '^(---|\+\+\+|@@)'
+} > diff-output.txt
 
-if [ ! -f "$CURRENT_REPORT" ] || [ ! -f "$PREVIOUS_REPORT" ]; then
-  echo "Missing report files." >> "$DIFF_OUTPUT"
-else
-  diff -u "$PREVIOUS_REPORT" "$CURRENT_REPORT" >> "$DIFF_OUTPUT" || true
-fi
+# Output the final diff
+cat diff-output.txt
 
-cat "$DIFF_OUTPUT"
-echo "DIFF_OUTPUT=$(cat "$DIFF_OUTPUT" | base64 -w 0)" >> $GITHUB_ENV
+# Export diff output for later steps (like Slack notification)
+DIFF_OUTPUT=$(cat diff-output.txt | base64)
+echo "DIFF_OUTPUT=$DIFF_OUTPUT" >> $GITHUB_ENV
