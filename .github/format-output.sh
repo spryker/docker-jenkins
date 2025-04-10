@@ -1,16 +1,6 @@
 #!/bin/bash
 
-# Display previous image report
-echo "📄 === Previous Image Report ==="
-cat previous-image-report.txt
-
-# Display current image report
-echo ""
-echo "📄 === Current Image Report ==="
-cat current-image-report.txt
-
-# Run diff and remove metadata lines
-echo ""
+# Only print the diff — the reports are already printed in the workflow steps
 echo "🔍 Running diff..."
 {
   echo "📋 === Diff Output ==="
@@ -19,6 +9,6 @@ echo "🔍 Running diff..."
 
 cat diff-output.txt
 
-# Export base64-encoded diff output (one line, no line breaks)
+# Export base64-encoded diff output for further use (Slack etc.)
 DIFF_OUTPUT=$(base64 -w 0 diff-output.txt)
 echo "DIFF_OUTPUT=$DIFF_OUTPUT" >> "$GITHUB_ENV"
