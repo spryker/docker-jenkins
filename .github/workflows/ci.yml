@@ -131,6 +131,17 @@ jobs:
         id: diff
         run: bash .github/format-output.sh
 
+      - name: Display Manifest and Diff in Logs
+        run: |
+          echo "🔍 === Current Image Report (Manifest) ==="
+          cat current-image-report.txt || echo "No manifest file found."
+          echo ""
+          echo "🆚 === Previous Image Report ==="
+          cat previous-image-report.txt || echo "No previous manifest file found."
+          echo ""
+          echo "📋 === Diff Output ==="
+          echo "${DIFF_OUTPUT:-No diff output found.}"
+
       - name: Fetch Job ID
         id: fetch_job_id
         if: ${{ github.ref == 'refs/heads/master' && env.DIFF_OUTPUT != '' }}
