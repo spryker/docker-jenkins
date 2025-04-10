@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "🔍 Running diff..."
-
 # Generate cleaned diff (remove headers like ---/+++/@@)
 diff -u previous-image-report.txt current-image-report.txt | grep -vE '^(---|\+\+\+|@@)' > diff-output.txt
 
