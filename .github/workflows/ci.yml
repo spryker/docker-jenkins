@@ -35,15 +35,10 @@ jobs:
           cat previous-image-report.txt
 
       - name: Run the diff and format output
+        id: diff
+        run: bash .github/format-output.sh
+
+      - name: Show diff output
         run: |
-          echo "📄 === Previous Image Report (2.176) ==="
-          cat previous-image-report.txt
-          
-          echo -e "\n📄 === Current Image Report (2.305) ==="
-          cat current-image-report.txt
-          
-          echo -e "\n🔍 Running diff..."
-          bash .github/format-output.sh
-          
-          echo -e "\n📋 === Diff Output ==="
-          cat diff-output.txt  
+          echo "📋 === Diff Output ==="
+          cat diff-output.txt
