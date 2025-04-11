@@ -111,9 +111,11 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.WEBHOOK_CE_SECURITY_SCAN_JENKINS }}
-          SLACK_WEBHOOK_TYPE: incoming-webhook
+          webhook: ${{ secrets.WEBHOOK_CE_SECURITY_SCAN_JENKINS }}
+          webhook-type: incoming-webhook
+        # env:
+        #   SLACK_WEBHOOK_URL: ${{ secrets.WEBHOOK_CE_SECURITY_SCAN_JENKINS }}
+        #   SLACK_WEBHOOK_TYPE: incoming-webhook
 
       - name: Fail the execution
         if: ${{ steps.docker-scan.outputs.total > 0 }}
