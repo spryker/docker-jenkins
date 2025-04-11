@@ -64,6 +64,7 @@ jobs:
         with:
           repository: ${{ secrets.AWS_ECR_REPO }}
           tag: ${{ join(matrix.tag) }}-${{ github.sha }}
+        continue-on-error: true
 
       - name: Delete images after scan images
         run: |
@@ -114,6 +115,6 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.WEBHOOK_CE_SECURITY_SCAN_JENKINS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
-    #   - name: Fail the execution
-    #     if: ${{ steps.docker-scan.outputs.total > 0 }}
-    #     run: exit 1
+      - name: Fail the execution
+        if: ${{ steps.docker-scan.outputs.total > 0 }}
+        run: exit 1
