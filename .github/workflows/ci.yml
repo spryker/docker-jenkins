@@ -81,5 +81,6 @@ jobs:
                 }
               ]
             }
-          webhook: ${{ secrets.WEBHOOK_CE_RELEASE_IMAGES_JENKINS }}
-          webhook-type: incoming-webhook
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.WEBHOOK_CE_RELEASE_IMAGES_JENKINS }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
