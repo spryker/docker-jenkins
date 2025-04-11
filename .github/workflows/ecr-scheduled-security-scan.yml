@@ -96,7 +96,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "Scanned image tag *${{ matrix.tags }}*.",
+              "text": "Scanned Jenkins image tag *${{ matrix.tag }}*.",
               "attachments": [
                 {
                   "pretext": "ECR vulnerability scan outputs for ${{ steps.set-date.outputs.current_datetime }}",
@@ -113,9 +113,6 @@ jobs:
             }
           webhook: ${{ secrets.WEBHOOK_CE_SECURITY_SCAN_JENKINS }}
           webhook-type: incoming-webhook
-        # env:
-        #   SLACK_WEBHOOK_URL: ${{ secrets.WEBHOOK_CE_SECURITY_SCAN_JENKINS }}
-        #   SLACK_WEBHOOK_TYPE: incoming-webhook
 
       - name: Fail the execution
         if: ${{ steps.docker-scan.outputs.total > 0 }}
