@@ -1,12 +1,11 @@
 name: ECR Jenkins Vulnerability Scan
 
 on:
-  # schedule:
-  #   - cron: '0 0 * * *'
+  schedule:
+    - cron: '0 0 * * *'
   push:
     branches:
-      # - master
-      - SC-22221
+      - master
 
 jobs:
   vulnerability-detection:
