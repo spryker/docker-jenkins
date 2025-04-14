@@ -20,6 +20,7 @@ jobs:
           #   tag: "2.176"
           #   platforms: "linux/amd64"
           #   image_type: "Jenkins"
+
           # ### Jenkins 2.3
           # - image: "2.305/Dockerfile"
           #   tag: "2.305"
@@ -29,6 +30,7 @@ jobs:
           #   tag: "2.324"
           #   platforms: "linux/amd64"
           #   image_type: "Jenkins"
+
           # ### Jenkins 2.4
           # - image: "2.401/Dockerfile"
           #   tag: "2.401"

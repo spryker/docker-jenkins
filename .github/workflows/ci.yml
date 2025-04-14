@@ -13,29 +13,29 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          ### Jenkins 2.1
           - image: '2.176/Dockerfile'
             tags: [ "spryker/jenkins:2.176" ]
-            platforms: [ 'linux/amd64', 'linux/arm64' ]
+            platforms: [ "linux/amd64", "linux/arm64" ]
 
+          ### Jenkins 2.3
           - image: '2.305/Dockerfile'
             tags: [ "spryker/jenkins:2.305" ]
-            platforms: [ 'linux/amd64', 'linux/arm64' ]
-
+            platforms: [ "linux/amd64", "linux/arm64" ]
           - image: '2.324/Dockerfile'
             tags: [ "spryker/jenkins:2.324" ]
-            platforms: [ 'linux/amd64', 'linux/arm64' ]
-          
+            platforms: [ "linux/amd64", "linux/arm64" ]
+
+          ### Jenkins 2.4
           - image: '2.401/Dockerfile'
             tags: [ "spryker/jenkins:2.401" ]
-            platforms: [ 'linux/amd64', 'linux/arm64' ]
-
+            platforms: [ "linux/amd64", "linux/arm64" ]
           - image: '2.442/Dockerfile'
             tags: [ "spryker/jenkins:2.442" ]
-            platforms: [ 'linux/amd64', 'linux/arm64' ]
-
+            platforms: [ "linux/amd64", "linux/arm64" ]
           - image: '2.488/Dockerfile'
             tags: [ "spryker/jenkins:latest", "spryker/jenkins:2.488" ]
-            platforms: [ 'linux/amd64', 'linux/arm64' ]
+            platforms: [ "linux/amd64", "linux/arm64" ]
 
     steps:
       - name: Check out repository
