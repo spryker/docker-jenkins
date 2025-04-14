@@ -46,5 +46,4 @@ jobs:
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SLACK_WEBHOOK_URL: ${{ secrets.WEBHOOK_CE_RELEASE_IMAGES_JENKINS }}
