@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on: push
 
@@ -34,7 +34,7 @@ jobs:
             tags: [ "spryker/jenkins:2.442" ]
             platforms: [ "linux/amd64", "linux/arm64" ]
           - image: '2.488/Dockerfile'
-            tags: [ "spryker/jenkins:latest", "spryker/jenkins:2.488" ]
+            tags: [ "spryker/jenkins:2.488" ]
             platforms: [ "linux/amd64", "linux/arm64" ]
 
     steps:
