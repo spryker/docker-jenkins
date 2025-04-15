@@ -15,32 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        ### Leaving only latest image. Details - https://spryker.atlassian.net/browse/SC-22221
-          # ### Jenkins 2.1
-          # - context: "2.176"
-          #   dockerfile: "Dockerfile"
-          #   image: "spryker/jenkins:2.176"
-          #   platforms: "linux/amd64"
-
-          # ### Jenkins 2.3
-          # - context: "2.305"
-          #   dockerfile: "Dockerfile"
-          #   image: "spryker/jenkins:2.305"
-          #   platforms: "linux/amd64"
-          # - context: "2.324"
-          #   dockerfile: "Dockerfile"
-          #   image: "spryker/jenkins:2.324"
-          #   platforms: "linux/amd64"
-
-          # ### Jenkins 2.4
-          # - context: "2.401"
-          #   dockerfile: "Dockerfile"
-          #   image: "spryker/jenkins:2.401"
-          #   platforms: "linux/amd64"
-          # - context: "2.442"
-          #   dockerfile: "Dockerfile"
-          #   image: "spryker/jenkins:2.442"
-          #   platforms: "linux/amd64"
+          ### Jenkins 2.4
           - context: "2.488"
             dockerfile: "Dockerfile"
             image: "spryker/jenkins:2.488"
