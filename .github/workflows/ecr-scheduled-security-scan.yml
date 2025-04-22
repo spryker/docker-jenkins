@@ -16,8 +16,8 @@ jobs:
       matrix:
         include:
           ### Jenkins 2.4
-          - image: "2.488/Dockerfile"
-            tag: "2.488"
+          - image: "2.492.3/Dockerfile"
+            tag: "2.492.3"
             platforms: "linux/amd64"
             image_type: "Jenkins"
 

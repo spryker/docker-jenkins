@@ -16,9 +16,9 @@ jobs:
       matrix:
         include:
           ### Jenkins 2.4
-          - context: "2.488"
+          - context: "2.492.3"
             dockerfile: "Dockerfile"
-            image: "spryker/jenkins:2.488"
+            image: "spryker/jenkins:2.492.3"
             platforms: "linux/amd64"
 
     name: Build and Scan - ${{ matrix.image }}
