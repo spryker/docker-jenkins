@@ -32,6 +32,7 @@ jobs:
             image_type: "Jenkins"
     uses: spryker-projects/gha-reusable-workflows/.github/workflows/release-notes-with-scans.yml@feat-release-notes
     with:
+      project-name: 'jenkins'
       image: ${{ matrix.image }}
       tag: ${{ matrix.tag }}
       platforms: ${{ matrix.platforms }}
