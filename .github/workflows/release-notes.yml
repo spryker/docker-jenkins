@@ -159,11 +159,24 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: 📤 Upload Changes
-        uses: actions/upload-artifact@v4
+        id: upload-changes
+        run: |
+          SAFE_TAG=$(echo "${{ matrix.tag }}" | sed 's/[:"<>|*?]/-/g')
+          echo "Uploading changes with safe name: changes-${SAFE_TAG}"
+          
+          echo "artifact_name=changes-${SAFE_TAG}" >> $GITHUB_OUTPUT
+        
+      - uses: actions/upload-artifact@v4
         with:
-          name: changes-${{ matrix.tag }}
+          name: ${{ steps.upload-changes.outputs.artifact_name }}
           path: changes.md
 
+      - name: 📥 Download Changes
+        uses: actions/download-artifact@v4
+        with:
+          path: ./changes
+          pattern: 'changes-*'    
+          
   generate_notes:
     needs: calculate_diffs
     runs-on: ubuntu-latest
