@@ -15,14 +15,11 @@ jobs:
   # Step 2: Security Scan
   security-scan:
     needs: ci-cd
+    if: fromJson(needs.ci-cd.outputs.successful_builds) != '[]'
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - image: "2.492.3/Dockerfile"
-            tag: "2.492.3"
-            platforms: "linux/amd64"
-            image_type: "Jenkins"
+        include: ${{ fromJson(needs.ci-cd.outputs.successful_builds) }}
     
     uses: ./.github/workflows/ecr-scheduled-security-scan.yml
     with:
@@ -35,7 +32,9 @@ jobs:
 
   # Step 3: Release Notes
   release-notes:
-    needs: security-scan
-    if: always()
+    needs: [ci-cd, security-scan]
+    if: always() && !cancelled()
     uses: ./.github/workflows/release-notes.yml
+    with:
+      ci_job_id: ${{ needs.ci-cd.outputs.build_job_id }}
     secrets: inherit

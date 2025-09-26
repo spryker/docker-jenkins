@@ -2,7 +2,13 @@ name: Generate Consolidated Release Notes
 
 on:
   workflow_call:
-
+    inputs:
+      ci_job_id:
+        required: true
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        required: true
 jobs:
   verify_workflow:
     runs-on: ubuntu-latest
@@ -101,15 +107,19 @@ jobs:
       - name: 🔄 Process CI Changes
         id: ci_changes
         run: |
-          # Extract image changes from CI job
-          CI_CHANGES=$(gh run view --job ${{ needs.ci-cd.outputs.job_id }} --log | \
-            awk '/Current image report:/,/Previous image report:/' | \
-            grep -v "Current image report:" | \
-            grep -v "Previous image report:")
-          
-          echo "ci_changes<<EOF" >> $GITHUB_OUTPUT
-          echo "$CI_CHANGES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          if [ -n "${{ inputs.ci_job_id }}" ]; then
+            # Extract image changes from CI job
+            CI_CHANGES=$(gh run view --job ${{ inputs.ci_job_id }} --log | \
+              awk '/Current image report:/,/Previous image report:/' | \
+              grep -v "Current image report:" | \
+              grep -v "Previous image report:")
+            
+            echo "ci_changes<<EOF" >> $GITHUB_OUTPUT
+            echo "$CI_CHANGES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "ci_changes=No CI changes available" >> $GITHUB_OUTPUT
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
