@@ -15,7 +15,7 @@ jobs:
   # Step 2: Security Scan
   security-scan:
     needs: ci-cd
-    if: always() && needs.ci-cd.outputs.successful_builds != ''
+    if: always() && needs.ci-cd.outputs.successful_builds != '[]' && needs.ci-cd.outputs.successful_builds != ''
     strategy:
       fail-fast: false
       matrix:
