@@ -2,6 +2,7 @@ name: CI/CD Jenkins Build and Scan
 
 on:
   push:
+  workflow_call:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
