@@ -1,25 +1,7 @@
 name: ECR Jenkins Vulnerability Scan
 
 on:
-  workflow_dispatch:  # 👈 keeps workflow valid but disables automatic triggers. See below
-  workflow_call:
-    inputs:
-      image:
-        required: true
-        type: string
-      tag:
-        required: true
-        type: string
-      platforms:
-        required: true
-        type: string
-      image_type:
-        required: true
-        type: string
-      trigger_source:
-        type: string
-        required: false
-        default: 'workflow'
+  workflow_dispatch  # 👈 keeps workflow valid but disables automatic triggers. See below
   # Disabled automatic triggers until results of discussion with Secirity team
   # schedule:
   #   - cron: '0 0 * * *'
@@ -39,7 +21,7 @@ jobs:
             platforms: "linux/amd64"
             image_type: "Jenkins"
 
-    uses: spryker-projects/gha-reusable-workflows/.github/workflows/ecr-scheduled-security-scan.yml@feat-release-notes
+    uses: spryker-projects/gha-reusable-workflows/.github/workflows/ecr-scheduled-security-scan.yml@main
     with:
       image: ${{ matrix.image }}
       tag: ${{ matrix.tag }}

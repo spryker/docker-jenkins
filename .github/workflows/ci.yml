@@ -2,14 +2,6 @@ name: CI/CD Jenkins Build and Scan
 
 on:
   push:
-  workflow_call:
-    outputs:
-      build_job_id:
-        description: "Job ID for release notes"
-        value: ${{ jobs.build-and-scan-images-for-vulnerabilities.outputs.job_id }}
-      successful_builds:
-        description: "Matrix of successful builds"
-        value: ${{ jobs.build-and-scan-images-for-vulnerabilities.outputs.successful_builds }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -53,7 +45,7 @@ jobs:
 
 
     name: Build and Scan - ${{ matrix.tag }}
-    uses: spryker-projects/gha-reusable-workflows/.github/workflows/ci.yml@feat-release-notes
+    uses: spryker-projects/gha-reusable-workflows/.github/workflows/ci.yml@main
     with:
       image: ${{ matrix.image }}
       tag: ${{ matrix.tag }}
