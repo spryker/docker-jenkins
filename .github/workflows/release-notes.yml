@@ -1,229 +1,164 @@
-name: Generate Consolidated Release Notes
+name: Generate Release Notes on Merge
 
 on:
-  workflow_call:
-    inputs:
-      ci_job_id:
-        required: true
-        type: string
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
 jobs:
-  verify_workflow:
+  generate_notes:
+    name: 📜 Generate Release Notes
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
-      proceed: ${{ steps.check.outputs.proceed }}
+      release_date: ${{ steps.assemble.outputs.release_date }}
+      last_updated_str: ${{ steps.assemble.outputs.last_updated_str }}
     steps:
-      - id: check
-        run: |
-          echo "proceed=true" >> $GITHUB_OUTPUT
-
-  calculate_diffs:
-    needs: verify_workflow
-    if: needs.verify_workflow.outputs.proceed == 'true'
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          ### Jenkins 2.4
-          - image: "2.492.3/Dockerfile"
-            tag: "spryker/jenkins:2.492.3"
-            platforms: "linux/amd64"
-            image_type: "Jenkins"
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: 🔎 Find Last & Current Job IDs
-        id: find_jobs
-        run: |
-          # Get the current combined workflow run
-          CURRENT_RUN_ID=$(gh run list --workflow="Combined CI/CD, Security Scan & Release Notes" \
-            --json databaseId,headSha,status \
-            -q '.[] | select(
-              .status == "completed" and 
-              .headSha == env.GITHUB_SHA
-            ) | .databaseId' \
-            --limit 1)
-          
-          # Get the previous successful run on master
-          PREVIOUS_RUN_ID=$(gh run list --workflow="Combined CI/CD, Security Scan & Release Notes" \
-            --branch master \
-            --json databaseId,headSha,status,conclusion \
-            -q '.[] | select(
-              .status == "completed" and 
-              .conclusion == "success" and
-              .headSha != env.GITHUB_SHA
-            ) | .databaseId' \
-            --limit 1)
-          
-          # Extract job IDs for security scans
-          if [[ -n "$CURRENT_RUN_ID" ]]; then
-            CURRENT_JOB_ID=$(gh api "repos/${{ github.repository }}/actions/runs/$CURRENT_RUN_ID/jobs" \
-              --jq ".jobs[] | select(
-                .name | contains(\"security-scan\") and 
-                contains(\"${{ matrix.tag }}\")
-              ) | .id")
-            echo "Found current security-scan job: $CURRENT_JOB_ID"
-          fi
-          
-          if [[ -n "$PREVIOUS_RUN_ID" ]]; then
-            PREVIOUS_JOB_ID=$(gh api "repos/${{ github.repository }}/actions/runs/$PREVIOUS_RUN_ID/jobs" \
-              --jq ".jobs[] | select(
-                .name | contains(\"security-scan\") and 
-                contains(\"${{ matrix.tag }}\")
-              ) | .id")
-            echo "Found previous security-scan job: $PREVIOUS_JOB_ID"
-          fi
-          
-          # Set outputs
-          echo "current_job_id=${CURRENT_JOB_ID:-}" >> $GITHUB_OUTPUT
-          echo "previous_job_id=${PREVIOUS_JOB_ID:-}" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_SHA: ${{ github.sha }}
-
-      - name: 📥 Fetch Scan Results
-        if: steps.find_jobs.outputs.current_job_id
-        run: |
-          # Get current scan results
-          if [[ -n "${{ steps.find_jobs.outputs.current_job_id }}" ]]; then
-            gh run view --job ${{ steps.find_jobs.outputs.current_job_id }} --log > current_raw.log
-            # Extract JSON between markers
-            awk '/Full scan details:/,/^$/' current_raw.log | tail -n +2 > current-scan.json
-          fi
-          
-          # Get previous scan results
-          if [[ -n "${{ steps.find_jobs.outputs.previous_job_id }}" ]]; then
-            gh run view --job ${{ steps.find_jobs.outputs.previous_job_id }} --log > previous_raw.log
-            awk '/Full scan details:/,/^$/' previous_raw.log | tail -n +2 > previous-scan.json
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🔄 Process CI Changes
-        id: ci_changes
-        run: |
-          if [ -n "${{ inputs.ci_job_id }}" ]; then
-            # Extract image changes from CI job
-            CI_CHANGES=$(gh run view --job ${{ inputs.ci_job_id }} --log | \
-              awk '/Current image report:/,/Previous image report:/' | \
-              grep -v "Current image report:" | \
-              grep -v "Previous image report:")
-            
-            echo "ci_changes<<EOF" >> $GITHUB_OUTPUT
-            echo "$CI_CHANGES" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
-          else
-            echo "ci_changes=No CI changes available" >> $GITHUB_OUTPUT
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 🔍 Compare Security Scans
-        id: security_diff
-        run: |
-          PREVIOUS_SCAN_FILE="previous-scan.json"
-          CURRENT_SCAN_FILE="current-scan.json"
-          
-          # Ensure files exist and are valid JSON
-          for file in "$PREVIOUS_SCAN_FILE" "$CURRENT_SCAN_FILE"; do
-            if [[ ! -f "$file" ]] || ! jq empty "$file" 2>/dev/null; then
-              echo '{"findings":[]}' > "$file"
-            fi
-          done
-          
-          # Generate security comparison
-          jq -s '
-          {
-            "fixed": ([.[0].findings[] | .name] - [.[1].findings[] | .name]),
-            "new": ([.[1].findings[] | .name] - [.[0].findings[] | .name]),
-            "unchanged": ([.[0].findings[] | .name] - ([.[0].findings[] | .name] - [.[1].findings[] | .name]))
-          }' "$PREVIOUS_SCAN_FILE" "$CURRENT_SCAN_FILE" > security_changes.json
-          
-          # Format output for release notes
-          {
-            echo "### Security Changes for ${{ matrix.tag }}"
-            echo "#### Fixed Vulnerabilities"
-            jq -r '.fixed[]' security_changes.json | while read -r cve; do
-              echo "- $cve"
-            done
-            echo "#### New Vulnerabilities"
-            jq -r '.new[]' security_changes.json | while read -r cve; do
-              echo "- $cve"
-            done
-          } > changes.md
-          
-          echo "changes<<EOF" >> $GITHUB_OUTPUT
-          cat changes.md >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: 📤 Upload Changes
-        id: upload-changes
-        run: |
-          SAFE_TAG=$(echo "${{ matrix.tag }}" | sed 's/[:"<>|*?]/-/g')
-          echo "Uploading changes with safe name: changes-${SAFE_TAG}"
-          
-          echo "artifact_name=changes-${SAFE_TAG}" >> $GITHUB_OUTPUT
-        
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.upload-changes.outputs.artifact_name }}
-          path: changes.md
-
-      - name: 📥 Download Changes
-        uses: actions/download-artifact@v4
-        with:
-          path: ./changes
-          pattern: 'changes-*'    
-          
-  generate_notes:
-    needs: calculate_diffs
-    runs-on: ubuntu-latest
-    steps:
-      - name: 📥 Download Changes
-        uses: actions/download-artifact@v4
-        with:
-          path: ./changes
-
-      - name: 📣 Get PR Info
+      - name: 📣 Get Merged PR Info
         id: pr-info
         uses: actions-ecosystem/action-get-merged-pull-request@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 📝 Generate Release Notes
+      - name: ✍️ Extract Sections from PR Body
+        id: extract
+        run: |
+          read -r -d '' PR_BODY <<'EOF'
+          ${{ steps.pr-info.outputs.body }}
+          EOF
+
+          VERSION_NOTES=$(echo "$PR_BODY" | awk '/### Version release notes/{flag=1;next}/### Improvements/{flag=0}flag')
+          echo "version_notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$VERSION_NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          IMPROVEMENTS=$(echo "$PR_BODY" | awk '/### Improvements/{flag=1;next}/###|## /{flag=0}flag')
+          echo "improvements<<EOF" >> $GITHUB_OUTPUT
+          echo "$IMPROVEMENTS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          SECURITY_FIXES_CONTENT=""
+          if echo "$PR_BODY" | grep -q "### Security Fixes"; then
+            SECURITY_FIXES_RAW=$(echo "$PR_BODY" | awk '/### Security Fixes/{flag=1;next}/## /{flag=0}flag')
+            if [[ -n "$(echo "$SECURITY_FIXES_RAW" | xargs)" ]]; then
+              SECURITY_FIXES_CONTENT=$(printf '\n### Security Fixes\n%s' "$SECURITY_FIXES_RAW")
+            fi
+          fi
+          echo "security_fixes<<EOF" >> $GITHUB_OUTPUT
+          echo "$SECURITY_FIXES_CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: 📦 Assemble Release Notes Block
+        id: assemble
         run: |
           RELEASE_DATE=$(date +'%Y%m%d')
+          echo "release_date=$RELEASE_DATE" >> $GITHUB_OUTPUT
+          
           PUBLISH_DATE=$(date +'%Y-%m-%d')
-          
-          {
-            echo "---"
-            echo "title: Release notes ${RELEASE_DATE}.0"
-            echo "last_updated: ${PUBLISH_DATE}"
-            echo "publish_date: ${PUBLISH_DATE}"
-            echo "---"
-            echo
-            echo "## Changes in this Release"
-            echo
-            if [[ -n "${{ steps.pr-info.outputs.body }}" ]]; then
-              echo "${{ steps.pr-info.outputs.body }}"
-            fi
-            echo
-            echo "## Security Changes"
-            
-            for dir in ./changes/*/; do
-              cat "${dir}/changes.md"
-              echo
-            done
-          } > release-notes.md
-          
-          echo "::group::📜 Release Notes Preview"
-          cat release-notes.md
-          echo "::endgroup::"
+          LAST_UPDATED_STR=$(date +'%B %d, %Y')
+          echo "last_updated_str=$LAST_UPDATED_STR" >> $GITHUB_OUTPUT
 
-      - name: 💾 Store Release Notes
+          cat << EOF > release-notes-block.md
+          ---
+          title: Release notes ${RELEASE_DATE}.0
+          publish_date: "${PUBLISH_DATE}"
+          ---
+
+          ## Changelog
+
+          ### Version release notes
+          ${{ steps.extract.outputs.version_notes }}
+
+          ### Improvements
+          ${{ steps.extract.outputs.improvements }}
+          ${{ steps.extract.outputs.security_fixes }}
+          EOF
+
+          echo "::group::📜 New Release Notes Block"
+          cat release-notes-block.md
+          echo "::endgroup::"
+          
+      - name: 📤 Upload Release Notes Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-notes
-          path: release-notes.md
+          name: release-notes-artifact
+          path: release-notes-block.md
+  create-release-pr:
+    name: 📄 Create Release Notes PR in Docs Repo
+    needs: generate_notes
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - name: 📥 Download Release Notes Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-notes-artifact
+
+      - name: Checkout Documentation Repository
+        uses: actions/checkout@v4
+        with:
+          repository: spryker/spryker-docs
+          token: ${{ secrets.DOCS_REPO_PAT }}
+          path: docs-repo
+
+      - name: 📝 Prepare Final Release Notes File
+        run: |
+          NEW_NOTES_BLOCK_FILE="release-notes-block.md"
+          TARGET_FILE_PATH="./docs-repo/docs/ca/dev/image-releases/jenkins/release-notes.md"
+          NEW_LAST_UPDATED="${{ needs.generate_notes.outputs.last_updated_str }}"
+          
+          echo "Target file path: $TARGET_FILE_PATH"
+          mkdir -p "$(dirname "$TARGET_FILE_PATH")"
+
+          if [ -f "$TARGET_FILE_PATH" ]; then
+            echo "File exists. Prepending new release block."
+            EXISTING_CONTENT=$(cat "$TARGET_FILE_PATH")
+            UPDATED_CONTENT=$(echo "$EXISTING_CONTENT" | sed "0,/last_updated:.*/s/last_updated:.*/last_updated: ${NEW_LAST_UPDATED}/")
+            
+            line_num=$(echo "$UPDATED_CONTENT" | sed -n '/---/=' | sed -n '2p')
+            MAIN_HEADER=$(echo "$UPDATED_CONTENT" | head -n "$line_num")
+            EXISTING_BODY=$(echo "$UPDATED_CONTENT" | tail -n "+$((line_num + 1))")
+
+            # Re-assemble the file with the new block prepended to the body
+            {
+              echo "$MAIN_HEADER"
+              echo ""
+              cat "$NEW_NOTES_BLOCK_FILE"
+              echo ""
+              echo "---"
+              echo "$EXISTING_BODY"
+            } > "$TARGET_FILE_PATH"
+          else
+            echo "File does not exist. Creating new file."
+            cat << EOF > "$TARGET_FILE_PATH"
+            ---
+            title: Release notes for jenkins image
+            description: This document describes the changes that have been recently released.
+            last_updated: ${NEW_LAST_UPDATED}
+            template: concept-topic-template
+            ---
+
+            This document describes the changes that have been recently released.
+            For additional support with this content, contact our support.  
+            If you found a new security vulnerability, contact us at **security@spryker.com**.
+
+            EOF
+            cat "$NEW_NOTES_BLOCK_FILE" >> "$TARGET_FILE_PATH"
+          fi
+
+      - name: 🚀 Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.DOCS_REPO_PAT }}
+          path: ./docs-repo
+          commit-message: "docs: Add release notes for ${{ needs.generate_notes.outputs.release_date }}"
+          branch: "docs/release-notes-${{ needs.generate_notes.outputs.release_date }}"
+          title: "Release Notes for ${{ needs.generate_notes.outputs.release_date }}"
+          body: |
+            This PR contains the latest automated release notes generated from the source repository.
+            Please review and merge. ✅
+          labels: "TW review needed, automation"
+          base: master

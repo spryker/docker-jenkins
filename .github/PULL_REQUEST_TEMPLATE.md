@@ -1,6 +1,14 @@
 ## PR Description
 Add a meaningful description here that will let us know what you want to fix with this PR or what functionality you want to add.
 
+### Official Jenkins release notes page
+
+https://www.jenkins.io/changelog/
+
+!!! PLEASE INCLUDE RELEASE NOTES OF THE SPECIFIC VERSION FROM THE OFFICIAL SOURCE IN THE 'Version release notes' SECTION !!!
+
+### Version release notes
+
 ### Improvements
 
 ### Security Fixes
