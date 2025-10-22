@@ -42,6 +42,9 @@ jobs:
           - image: "2.504.1/Dockerfile"
             tag: "spryker/jenkins:2.504.1"
             platforms: "linux/amd64,linux/arm64"
+          - image: "2.516.3/Dockerfile"
+            tag: "spryker/jenkins:2.516.3"
+            platforms: "linux/amd64,linux/arm64"
 
 
     name: Build and Scan - ${{ matrix.tag }}
