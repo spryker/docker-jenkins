@@ -107,7 +107,7 @@ jobs:
       - name: 📝 Prepare Final Release Notes File
         run: |
           NEW_NOTES_BLOCK_FILE="release-notes-block.md"
-          TARGET_FILE_PATH="./docs-repo/docs/about/all/releases/image-releases/jenkins/release-notes-jenkins.md"
+          TARGET_FILE_PATH="./docs-repo/docs/about/all/releases/image-releases/jenkins/release-notes-spryker-jenkins.md"
           NEW_LAST_UPDATED="${{ needs.generate_notes.outputs.last_updated_str }}"
           
           echo "Target file path: $TARGET_FILE_PATH"
