@@ -51,6 +51,7 @@ jobs:
           cat << EOF > release-notes-block.md
           ---
           title: Release notes for spryker-jenkins ${RELEASE_DATE}.0
+          
           publish_date: "${PUBLISH_DATE}"
           ---
 
