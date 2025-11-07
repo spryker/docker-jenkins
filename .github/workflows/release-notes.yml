@@ -104,44 +104,42 @@ jobs:
           NEW_NOTES_BLOCK_FILE="release-notes-block.md"
           TARGET_FILE_PATH="./docs-repo/docs/about/all/releases/image-releases/jenkins/release-notes-spryker-jenkins.md"
           NEW_LAST_UPDATED="${{ needs.generate_notes.outputs.last_updated_str }}"
+          CURRENT_DATE=$(date +'%Y-%m-%d')
           
           echo "Target file path: $TARGET_FILE_PATH"
           mkdir -p "$(dirname "$TARGET_FILE_PATH")"
 
           if [ -f "$TARGET_FILE_PATH" ]; then
-            echo "File exists. Prepending new release block."
+            echo "File exists. Updating last_updated, publish_date and prepending release block."
             EXISTING_CONTENT=$(cat "$TARGET_FILE_PATH")
-            UPDATED_CONTENT=$(echo "$EXISTING_CONTENT" | sed "0,/last_updated:.*/s/last_updated:.*/last_updated: ${NEW_LAST_UPDATED}/")
+            UPDATED_CONTENT=$(echo "$EXISTING_CONTENT" | sed -e "0,/last_updated:.*/s/last_updated:.*/last_updated: ${NEW_LAST_UPDATED}/" -e "0,/publish_date:.*/s/publish_date:.*/publish_date: \"${CURRENT_DATE}\"/" )
             
             line_num=$(echo "$UPDATED_CONTENT" | sed -n '/---/=' | sed -n '2p')
             MAIN_HEADER=$(echo "$UPDATED_CONTENT" | head -n "$line_num")
             EXISTING_BODY=$(echo "$UPDATED_CONTENT" | tail -n "+$((line_num + 1))")
 
-            # Re-assemble the file with the new block prepended to the body
             {
               echo "$MAIN_HEADER"
               echo ""
               cat "$NEW_NOTES_BLOCK_FILE"
-              echo ""
-              echo "---"
               echo "$EXISTING_BODY"
             } > "$TARGET_FILE_PATH"
           else
-            echo "File does not exist. Creating new file."
-            cat << EOF > "$TARGET_FILE_PATH"
-            ---
-            title: Release notes for jenkins image
-            description: This document describes the changes that have been recently released.
-            last_updated: ${NEW_LAST_UPDATED}
-            template: concept-topic-template
-            publish_date: "${PUBLISH_DATE}"
-            ---
+            echo "File does not exist. Creating new file with static header and intro text."
+            printf '%s\n' \
+              "---" \
+              "title: Release notes for jenkins image" \
+              "description: This document describes the changes that have been recently released." \
+              "last_updated: ${NEW_LAST_UPDATED}" \
+              "template: concept-topic-template" \
+              "publish_date: \"${CURRENT_DATE}\"" \
+              "---" \
+              "" \
+              "This document describes the changes that have been recently released." \
+              "For additional support with this content, contact our support." \
+              "If you found a new security vulnerability, contact us at **security@spryker.com**." > "$TARGET_FILE_PATH"
 
-            This document describes the changes that have been recently released.
-            For additional support with this content, contact our support.  
-            If you found a new security vulnerability, contact us at **security@spryker.com**.
-
-            EOF
+            echo "" >> "$TARGET_FILE_PATH"
             cat "$NEW_NOTES_BLOCK_FILE" >> "$TARGET_FILE_PATH"
           fi
 
