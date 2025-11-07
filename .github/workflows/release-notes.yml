@@ -2,9 +2,9 @@ name: Generate Release Notes on Merge
 
 on:
   pull_request:
-    types: [closed]
+    types: [closed, opened, synchronize, edited]
     branches:
-      - master
+      - SC-23484-fix2
 
 jobs:
   generate_notes:
@@ -23,24 +23,28 @@ jobs:
 
       - name: ✍️ Extract Sections from PR Body
         id: extract
+        env:
+          PR_BODY_RAW: ${{ steps.pr-info.outputs.body }}
         run: |
-          read -r -d '' PR_BODY <<'EOF'
-          ${{ steps.pr-info.outputs.body }}
-          EOF
-
-          VERSION_NOTES=$(echo "$PR_BODY" | awk '/### Version release notes/{flag=1;next}/### Improvements/{flag=0}flag')
+          # Clean and normalize the PR body
+          PR_BODY=$(echo "$PR_BODY_RAW" | tr -d '\r')
+          
+          # Extract version release notes (if present)
+          VERSION_NOTES=$(echo "$PR_BODY" | awk '/^### Version release notes/{flag=1;next}/^### Improvements/{flag=0}flag')
           echo "version_notes<<EOF" >> $GITHUB_OUTPUT
           echo "$VERSION_NOTES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-
-          IMPROVEMENTS=$(echo "$PR_BODY" | awk '/### Improvements/{flag=1;next}/###|## /{flag=0}flag')
+          
+          # Extract improvements (between "### Improvements" and "### Security Fixes")
+          IMPROVEMENTS=$(echo "$PR_BODY" | awk '/^### Improvements/{flag=1;next}/^### Security Fixes/{flag=0}flag')
           echo "improvements<<EOF" >> $GITHUB_OUTPUT
           echo "$IMPROVEMENTS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-
+          
+          # Extract security fixes
           SECURITY_FIXES_CONTENT=""
-          if echo "$PR_BODY" | grep -q "### Security Fixes"; then
-            SECURITY_FIXES_RAW=$(echo "$PR_BODY" | awk '/### Security Fixes/{flag=1;next}/## /{flag=0}flag')
+          if echo "$PR_BODY" | grep -q "^### Security Fixes"; then
+            SECURITY_FIXES_RAW=$(echo "$PR_BODY" | awk '/^### Security Fixes/{flag=1;next}/^## Steps/{flag=0}flag')
             if [[ -n "$(echo "$SECURITY_FIXES_RAW" | xargs)" ]]; then
               SECURITY_FIXES_CONTENT=$(printf '\n### Security Fixes\n%s' "$SECURITY_FIXES_RAW")
             fi
