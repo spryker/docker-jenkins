@@ -3,8 +3,6 @@ name: Generate Release Notes on Merge
 on:
   pull_request:
     types: [closed, opened, synchronize, edited]
-    branches:
-      - SC-23484-fix2
 
 jobs:
   generate_notes:
