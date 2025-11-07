@@ -2,9 +2,7 @@ name: Generate Release Notes on Merge
 
 on:
   pull_request:
-    types: [closed]
-    branches:
-      - master
+    types: [closed, opened, synchronize, edited]
 
 jobs:
   generate_notes:
@@ -56,12 +54,14 @@ jobs:
           publish_date: "${PUBLISH_DATE}"
           ---
 
-          ### Improvements
+          Improvements
+          ------------
           ${{ steps.extract.outputs.improvements }}
           ${{ steps.extract.outputs.security_fixes }}
 
-          ### Version release notes
-          ${{ steps.extract.outputs.version_notes }}
+          Version release notes
+          -------------------
+          $(echo "${{ steps.extract.outputs.version_notes }}" | sed 's|https://\([^ ]*\)|[\1](https://\1)|g')
 
           EOF
 
