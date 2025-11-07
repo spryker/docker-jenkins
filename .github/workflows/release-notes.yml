@@ -56,7 +56,7 @@ jobs:
 
           cat << EOF > release-notes-block.md
           ---
-          title: Release notes ${RELEASE_DATE}.0
+          title: Release notes for spryker-jenkins ${RELEASE_DATE}.0
           publish_date: "${PUBLISH_DATE}"
           ---
 
@@ -128,7 +128,7 @@ jobs:
             echo "File does not exist. Creating new file with static header and intro text."
             printf '%s\n' \
               "---" \
-              "title: Release notes for jenkins image" \
+              "title: Release notes for spryker-jenkins docker image" \
               "description: This document describes the changes that have been recently released." \
               "last_updated: ${NEW_LAST_UPDATED}" \
               "template: concept-topic-template" \
@@ -148,9 +148,9 @@ jobs:
         with:
           token: ${{ secrets.DOCS_REPO_PAT }}
           path: ./docs-repo
-          commit-message: "docs: Add release notes for ${{ needs.generate_notes.outputs.release_date }}"
-          branch: "docs/release-notes-${{ needs.generate_notes.outputs.release_date }}"
-          title: "Release Notes for ${{ needs.generate_notes.outputs.release_date }}"
+          commit-message: "docs: Add release notes for spryker-jenkins ${{ needs.generate_notes.outputs.release_date }}"
+          branch: "docs/docker-images/release-notes-spryker-jenkins-${{ needs.generate_notes.outputs.release_date }}"
+          title: "Release Notes for spryker-jenkins ${{ needs.generate_notes.outputs.release_date }}"
           body: |
             This PR contains the latest automated release notes generated from the source repository.
             Please review and merge. ✅
