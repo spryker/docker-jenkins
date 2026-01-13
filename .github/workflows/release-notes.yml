@@ -20,17 +20,21 @@ jobs:
         env:
           PR_BODY_RAW: ${{ github.event.pull_request.body }}
         run: |
-          # Clean and normalize the PR body, remove checklist section
-          PR_BODY=$(echo "$PR_BODY_RAW" | tr -d '\r' | sed '/^## Checklist/,$d')
+          # Clean and normalize the PR body, remove checklist and steps sections
+          PR_BODY=$(echo "$PR_BODY_RAW" | tr -d '\r' | sed '/^## Checklist/,$d' | sed '/^## Steps before you submit a PR/,$d')
+          
+          # Remove instructional text from PR description
+          PR_BODY=$(echo "$PR_BODY" | sed '/^Add a meaningful description here/d')
           
           # Extract improvements (after "### Improvements" and before "### Security Fixes")
-          IMPROVEMENTS=$(echo "$PR_BODY" | awk '/^### Improvements/{flag=1;next}/^### Security Fixes|^### Version release notes/{flag=0}flag')
+          IMPROVEMENTS=$(echo "$PR_BODY" | awk '/^### Improvements/{flag=1;next}/^### Security Fixes|^### Official Jenkins release notes page|^### Version release notes/{flag=0}flag')
           echo "improvements<<EOF" >> $GITHUB_OUTPUT
           echo "$IMPROVEMENTS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
           
-          # Extract security fixes (after "### Security Fixes" and before "### Version release notes")
-          SECURITY_FIXES=$(echo "$PR_BODY" | awk '/^### Security Fixes/{flag=1;next}/^### Version release notes/{flag=0}flag')
+          # Extract security fixes (after "### Security Fixes" and before "### Official Jenkins" or "### Version release notes")
+          # Filter out the instructional text with !!!
+          SECURITY_FIXES=$(echo "$PR_BODY" | awk '/^### Security Fixes/{flag=1;next}/^### Official Jenkins release notes page|^### Version release notes/{flag=0}flag' | grep -v '^!!!')
           echo "security_fixes<<EOF" >> $GITHUB_OUTPUT
           echo "$SECURITY_FIXES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -57,7 +61,7 @@ jobs:
           PROCESSED_VERSION_NOTES=$(echo '${{ steps.extract.outputs.version_notes }}' | \
             sed -E 's|([^(])(https?://[^ )]+)|\1[\2](\2)|g')
 
-          # Check if security fixes section has content
+          # Check if security fixes section has content (after filtering out instructional text)
           SECURITY_FIXES='${{ steps.extract.outputs.security_fixes }}'
           SECURITY_SECTION=""
           if [ -n "$(echo "$SECURITY_FIXES" | tr -d '[:space:]')" ]; then
