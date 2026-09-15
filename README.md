@@ -4,7 +4,7 @@
 
 Extends official Jenkins image with Docker to be able run jobs inside containers.
 
-* Based on: Official `Jenkins 2.176.1`, `Jenkins 2.305`, `Jenkins 2.324`,  `Jenkins 2.401`, `Jenkins 2.442` and `Jenkins 2.488` 
+* Based on: Official `Jenkins 2.516.3`, `Jenkins 2.555.1` and `Jenkins 2.568.1`
 * Included:
     - Docker
 
@@ -12,35 +12,32 @@ Extends official Jenkins image with Docker to be able run jobs inside containers
 
 ## Tags
 
-| Tag     | Jenkins version     | Details     | Dockerfile     |
-| :------------- | :------------- | :------------- | :------------- |
-| [spryker/jenkins:latest](https://hub.docker.com/r/spryker/jenkins/tags) | 2.401.3 | [![](https://images.microbadger.com/badges/image/spryker/jenkins:latest.svg)](https://microbadger.com/images/spryker/jenkins:latest "Get your own image badge on microbadger.com") | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.401/Dockerfile) |
-| [spryker/jenkins:2.176](https://hub.docker.com/r/spryker/jenkins/tags)  | 2.176.1 | [![](https://images.microbadger.com/badges/image/spryker/jenkins:2.176.svg)](https://microbadger.com/images/spryker/jenkins:2.176 "Get your own image badge on microbadger.com") | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.176/Dockerfile) |
-| [spryker/jenkins:2.305](https://hub.docker.com/r/spryker/jenkins/tags)  | 2.305 | [![](https://images.microbadger.com/badges/image/spryker/jenkins:2.304.svg)](https://microbadger.com/images/spryker/jenkins:2.305 "Get your own image badge on microbadger.com") | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.305/Dockerfile) |
-| [spryker/jenkins:2.324](https://hub.docker.com/r/spryker/jenkins/tags)  | 2.324 | [![](https://images.microbadger.com/badges/image/spryker/jenkins:2.324.svg)](https://microbadger.com/images/spryker/jenkins:2.324 "Get your own image badge on microbadger.com") | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.324/Dockerfile) |
-| [spryker/jenkins:2.401](https://hub.docker.com/r/spryker/jenkins/tags)  | 2.401.3 | [![](https://images.microbadger.com/badges/image/spryker/jenkins:2.401.svg)](https://microbadger.com/images/spryker/jenkins:2.401 "Get your own image badge on microbadger.com") | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.401/Dockerfile) |
-| [spryker/jenkins:2.442](https://hub.docker.com/r/spryker/jenkins/tags)  | 2.442 | [![](https://images.microbadger.com/badges/image/spryker/jenkins:2.442.svg)](https://microbadger.com/images/spryker/jenkins:2.442 "Get your own image badge on microbadger.com") | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.442/Dockerfile) |
-| [spryker/jenkins:2.488](https://hub.docker.com/r/spryker/jenkins/tags)  | 2.488 | [![](https://images.microbadger.com/badges/image/spryker/jenkins:2.488.svg)](https://microbadger.com/images/spryker/jenkins:2.488 "Get your own image badge on microbadger.com") | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.488/Dockerfile) |
+| Tag     | Jenkins version     | Dockerfile     |
+| :------------- | :------------- | :------------- |
+| [spryker/jenkins:latest](https://hub.docker.com/r/spryker/jenkins/tags) | 2.568.1 | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.568.1/Dockerfile) |
+| [spryker/jenkins:2.568.1](https://hub.docker.com/r/spryker/jenkins/tags) | 2.568.1 | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.568.1/Dockerfile) |
+| [spryker/jenkins:2.555.1](https://hub.docker.com/r/spryker/jenkins/tags) | 2.555.1 | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.555.1/Dockerfile) |
+| [spryker/jenkins:2.516.3](https://hub.docker.com/r/spryker/jenkins/tags) | 2.516.3 | [:link:](https://github.com/spryker/docker-jenkins/blob/master/2.516.3/Dockerfile) |
 
 ## How to use
 
 ### Pull image
 
 ```bash
-$ docker pull spryker/jenkins:2.488
+$ docker pull spryker/jenkins:2.568.1
 ```
 
 ### Dockerfile
 
 ```dockerfile
-FROM spryker/jenkins:2.488
+FROM spryker/jenkins:2.568.1
 ```
 
 ### docker-compose.yml
 
 ```yaml
 jenkins:
-    image: spryker/jenkins:2.488
+    image: spryker/jenkins:2.568.1
 ```
 
 ## How to run docker container by Jenkins job
@@ -52,13 +49,13 @@ jenkins:
 
 ### Running with `docker`
 
-`docker run -it --rm --group-add ${DOCKER_GID} -v /var/run/docker.sock:/var/run/docker.sock:ro spryker/jenkins:2.401`
+`docker run -it --rm --group-add ${DOCKER_GID} -v /var/run/docker.sock:/var/run/docker.sock:ro spryker/jenkins:2.568.1`
 
 ### Running with `docker-compose`
 
 ```yaml
 jenkins:
-    image: spryker/jenkins:2.488
+    image: spryker/jenkins:2.568.1
     user: "1000:${DOCKER_GID}"
     volumes:
         - /var/run/docker.sock:/var/run/docker.sock:ro
