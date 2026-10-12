@@ -23,7 +23,10 @@ jobs:
           - image: "2.568.1/Dockerfile"
             tag: "spryker/jenkins:2.568.1"
             platforms: "linux/amd64,linux/arm64"
-          - image: "2.568.1/Dockerfile"
+          - image: "2.580.1/Dockerfile"
+            tag: "spryker/jenkins:2.580.1"
+            platforms: "linux/amd64,linux/arm64"
+          - image: "2.580.1/Dockerfile"
             tag: "spryker/jenkins:latest"
             platforms: "linux/amd64,linux/arm64"
 
